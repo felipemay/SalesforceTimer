@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Salesforce Chat Timer",
+  "version": "1.0",
+  "permissions": ["tabs", "storage", "scripting", "notifications"],
+  "host_permissions": ["*://suportelinx.lightning.force.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://suportelinx.lightning.force.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

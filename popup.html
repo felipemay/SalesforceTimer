@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Salesforce Chat Timer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        width: 300px;
+        padding: 10px;
+        background-color: #f4f4f4;
+      }
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        background: white;
+        margin: 5px 0;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      }
+      .tabs {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .tab-button {
+        flex: 1;
+        padding: 5px;
+        cursor: pointer;
+        text-align: center;
+        background: #ccc;
+        border: none;
+      }
+      .tab-button.active {
+        background: #007bff;
+        color: white;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      .settings label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      .settings input {
+        width: 100%;
+        padding: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 3px;
+        margin-top: 5px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Salesforce Chats</h2>
+    <div class="tabs">
+      <button class="tab-button active" data-tab="activeTab">Ativos</button>
+      <button class="tab-button" data-tab="finishedTab">Finalizados</button>
+      <button class="tab-button" data-tab="optionsTab">Opções</button>
+      <button class="tab-button" data-tab="preChatConfigTab">Configurações Pre‑Chat</button>
+    </div>
+
+    <div id="activeTab" class="tab-content active">
+      <ul id="chatList"></ul>
+    </div>
+
+    <div id="finishedTab" class="tab-content">
+      <ul id="finishedChatList"></ul>
+    </div>
+
+    <div id="optionsTab" class="tab-content">
+      <div class="settings">
+        <label for="inactivityTime">Tempo de Inatividade (minutos):</label>
+        <input type="number" id="inactivityTime" value="30" min="1" />
+
+        <label for="repeatTime">Tempo para Repetir Alerta (minutos):</label>
+        <input type="number" id="repeatTime" value="5" min="1" />
+
+        <button id="applySettings">Aplicar</button>
+      </div>
+    </div>
+
+    <div id="preChatConfigTab" class="tab-content">
+      <div class="settings">
+        <label for="preChatGreeting">Saudação Pré‑Chat:</label>
+        <input
+          type="text"
+          id="preChatGreeting"
+          placeholder="Digite a saudação pré‑chat"
+        />
+
+        <label for="preChatEmpty"
+          >Mensagem para campo vazio:</label
+        >
+        <input
+          type="text"
+          id="preChatEmpty"
+          placeholder="Mensagem para campos não preenchidos"
+        />
+
+        <label for="preChatFooter">Mensagem Final:</label>
+        <input
+          type="text"
+          id="preChatFooter"
+          placeholder="Mensagem final de aviso"
+        />
+
+        <button id="applyPreChatSettings">
+          Aplicar Configurações Pre‑Chat
+        </button>
+      </div>
+    </div>
+
+    <button id="clearHistory">Limpar Histórico</button>
+    <script src="popup.js"></script>
+  </body>
+</html>
