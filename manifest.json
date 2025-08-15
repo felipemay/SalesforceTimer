@@ -1,18 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "Salesforce Chat Timer",
-  "version": "1.0",
-  "permissions": ["tabs", "storage", "scripting", "notifications"],
-  "host_permissions": ["*://suportelinx.lightning.force.com/*"],
+  "name": "Salesforce Chat Timer BETA",
+  "version": "1.6",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "permissions": ["tabs", "storage", "scripting", "notifications", "offscreen"],
+  "host_permissions": ["*://suportelinx.lightning.force.com/*", "*://admin.microvix.com.br/*", "*://suportelinx--uat.sandbox.lightning.force.com/*"],
   "background": {
     "service_worker": "background.js"
   },
-  "action": {
-    "default_popup": "popup.html"
-  },
   "content_scripts": [
     {
-      "matches": ["*://suportelinx.lightning.force.com/*"],
+      "matches": ["*://suportelinx.lightning.force.com/*", "*://suportelinx--uat.sandbox.lightning.force.com/*"],
       "js": ["content.js"]
     }
   ]
