@@ -80,7 +80,7 @@
       <button class="tab-button active" data-tab="activeTab">Ativos</button>
       <button class="tab-button" data-tab="finishedTab">Finalizados</button>
       <button class="tab-button" data-tab="optionsTab">Opções</button>
-      <button class="tab-button" data-tab="preChatConfigTab">Configurações Pre‑Chat</button>
+      <button class="tab-button" id="openOptionsButton">Configurações Avançadas</button>
     </div>
 
     <div id="activeTab" class="tab-content active">
@@ -104,95 +104,7 @@
         <button id="applySettings">Aplicar</button>
       </div>
     </div>
-
-    <div id="preChatConfigTab" class="tab-content">
-      <div class="settings">
-        <label for="preChatGreeting">Saudação Pré‑Chat:</label>
-        <input type="text" id="preChatGreeting" placeholder="Digite a saudação pré‑chat" />
     
-        <label for="preChatEmpty">Mensagem para campo vazio:</label>
-        <input type="text" id="preChatEmpty" placeholder="Mensagem para campos não preenchidos" />
-    
-        <label for="preChatFooter">Mensagem Final:</label>
-        <input type="text" id="preChatFooter" placeholder="Mensagem final de aviso" />
-    
-        <label>Edite os campos que vêm por padrão para exibir emojis, etc.:</label>
-        <label for="preChatName">Nome</label>
-        <input type="text" id="preChatName" placeholder="Exemplo: 💻Nome:" />
-        <label for="preChatCNPJ">CNPJ</label>
-        <input type="text" id="preChatCNPJ" placeholder="Exemplo: 🏢CNPJ:" />
-        <label for="preChatEmail">Email</label>
-        <input type="text" id="preChatEmail" placeholder="Exemplo: 🌐Email:" />
-        <label for="preChatPhone">Telefone</label>
-        <input type="text" id="preChatPhone" placeholder="Exemplo: 📱WhatsApp:" />
-    
-        <!-- Área para adicionar campos customizados -->
-        <div id="customFieldsSection">
-          <h3>Campos Customizados</h3>
-          <div id="customFieldsContainer"></div>
-          <button id="addCustomFieldButton">Adicionar Campo Customizado</button>
-        </div>
-    
-        <button id="applyPreChatSettings">Aplicar Configurações Pre‑Chat</button>
-      </div>
-    </div>
-    
-    <!-- <div id="preChatConfigTab" class="tab-content">
-      <div class="settings">
-        <label for="preChatGreeting">Saudação Pré‑Chat:</label>
-        <input
-          type="text"
-          id="preChatGreeting"
-          placeholder="Digite a saudação pré‑chat"
-        />
-
-        <label for="preChatEmpty"
-          >Mensagem para campo vazio:</label
-        >
-        <input
-          type="text"
-          id="preChatEmpty"
-          placeholder="Mensagem para campos não preenchidos"
-        />
-
-        <label for="preChatFooter">Mensagem Final:</label>
-        <input
-          type="text"
-          id="preChatFooter"
-          placeholder="Mensagem final de aviso"
-        />
-        <label>Edite os campos que vem por padrao para colocar emojis e etc</label>
-        <label for="preChatName">Nome</label>
-        <input
-          type="text"
-          id="preChatName"
-          placeholder="Exemplo: 💻Nome:"
-        />
-        <label for="preChatCNPJ">CNPJ</label>
-        <input
-          type="text"
-          id="preChatCNPJ"
-          placeholder="Exemplo: 🏢CNPJ:"
-        />
-        <label for="preChatEmail">Email</label>
-        <input
-          type="text"
-          id="preChatEmail"
-          placeholder="Exemplo: 🌐Email:"
-        />
-        <label for="preChatPhone">Telefone</label>
-        <input
-          type="text"
-          id="preChatPhone"
-          placeholder="Exemplo: 📱WhatsApp:"
-        />
-
-        <button id="applyPreChatSettings">
-          Aplicar Configurações Pre‑Chat
-        </button>
-      </div>
-    </div> -->
-
     <script src="popup.js"></script>
   </body>
 </html>

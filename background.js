@@ -86,7 +86,7 @@ function checkChats() {
         if (!lastPlayed[chatId] || now - lastPlayed[chatId] > repeatTime) {
           chrome.notifications.create({
             type: "basic",
-            iconUrl: "icons/icon.png", // Ajuste o caminho do ícone se necessário
+            iconUrl: "icons/icon.png",
             title: "Chat Excedeu o Tempo",
             message: `O chat ${chatId} está ativo há mais de ${data.inactivityTime} minutos.`,
             priority: 2,
@@ -175,7 +175,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     formData.append('equipe', '');
     formData.append('opcao_pesquisa', 'C'); // CNPJ
     formData.append('conteudo', cnpj);
-    formData.append('slt_classificacao', '0');
+    formData.append('slt_classificacao', '3');
     formData.append('slt_plano_comercial_microvix', '0');
     formData.append('ordem_listagem', 'N');
 

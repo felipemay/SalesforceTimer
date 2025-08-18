@@ -13,6 +13,7 @@
       "48": "icons/icon48.png"
     }
   },
+  "options_page": "options.html",
   "permissions": ["tabs", "storage", "scripting", "notifications", "offscreen"],
   "host_permissions": ["*://suportelinx.lightning.force.com/*", "*://admin.microvix.com.br/*", "*://suportelinx--uat.sandbox.lightning.force.com/*"],
   "background": {
@@ -22,6 +23,15 @@
     {
       "matches": ["*://suportelinx.lightning.force.com/*", "*://suportelinx--uat.sandbox.lightning.force.com/*"],
       "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "libs/toastify.min.js",
+        "libs/toastify.min.css"
+      ],
+      "matches": [ "*://suportelinx.lightning.force.com/*", "*://suportelinx--uat.sandbox.lightning.force.com/*" ]
     }
   ]
 }

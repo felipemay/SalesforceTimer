@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salesforce Chat Timer - Configurações</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <style>
+    body { background-color: #f0f2f5; }
+    .container { max-width: 800px; }
+    .help-text { font-size: 0.8rem; color: #6c757d; }
+    .help-text code { background-color: #e9ecef; padding: .1rem .3rem; border-radius: .25rem; font-size: 0.75rem; }
+    .removeFieldButton { background-color: #dc3545; color: white; border: none; border-radius: .375rem; padding: .375rem .75rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div class="container py-4">
+    <h2 class="text-center mb-4">Configurações de Templates</h2>
+
+    <div class="card mb-4">
+      <div class="card-header"> Template de Saudação </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <label for="preChatGreeting" class="form-label mb-0">Saudação Inicial:</label>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="disableGreeting">
+            <label class="form-check-label" for="disableGreeting">Desativar</label>
+          </div>
+        </div>
+        <textarea id="preChatGreeting" class="form-control mb-3" rows="3" placeholder="Olá! Tudo bem? 😊&#10;Antes de darmos sequência ao atendimento, por favor, poderia confirmar ou informar os seguintes dados:"></textarea>
+        
+        <label for="preChatTemplate" class="form-label">Template Principal:</label>
+        <textarea id="preChatTemplate" class="form-control" rows="5" placeholder="• Nome: {{nome}}&#10;• CNPJ: {{cnpj}}&#10;• Email: {{email}}&#10;• Telefone: {{telefone}}&#10;{{campos_customizados}}"></textarea>
+        
+        <div class="help-text mt-1" id="variablesHelpContainer">
+          <b>Importante:</b> Digite o texto completo, incluindo os rótulos. <br>
+          Variáveis: <code>{{nome}}</code><code>{{cnpj}}</code><code>{{email}}</code><code>{{telefone}}</code> <span id="customVariablesHelp"></span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
+            <label for="preChatEmpty" class="form-label mb-0">Mensagem para campo vazio:</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="disableEmpty">
+              <label class="form-check-label" for="disableEmpty">Deixar em branco</label>
+            </div>
+        </div>
+        <input type="text" id="preChatEmpty" class="form-control mb-3" placeholder="Favor preencher com {campo} que você usa" />
+        
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <label for="preChatFooter" class="form-label mb-0">Mensagem Final:</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="disableFooter">
+              <label class="form-check-label" for="disableFooter">Desativar</label>
+            </div>
+        </div>
+        <textarea id="preChatFooter" class="form-control" rows="3" placeholder="Ah! Aproveito para informar que, através deste chat, é possível enviar e receber áudios, prints e vídeos. Esse recurso facilita muito o nosso atendimento, tornando a comunicação mais rápida e assertiva!&#10;Fico no aguardo das informações para prosseguirem."></textarea>
+        
+        <h5 class="mt-4">Campos Customizados</h5>
+        <div class="d-none d-md-flex row gx-2 text-center small text-muted mb-1">
+            <div class="col">Rótulo</div> <div class="col">Valor Padrão</div> <div class="col">Variável</div> <div style="width: 50px;"></div>
+        </div>
+        <div id="customFieldsContainer" class="vstack gap-2"></div>
+        <button id="addCustomFieldButton" class="btn btn-secondary w-100 mt-2">Adicionar Campo Customizado</button>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header"> Template de Detalhamento </div>
+      <div class="card-body">
+        <label for="detailingTemplate" class="form-label">Template de Detalhamento do Caso:</label>
+        <textarea id="detailingTemplate" class="form-control" rows="12" placeholder="Dados do portal.&#10;CNPJ: {{CNPJ}}&#10;Portal: {{Portal}}&#10;Loja: {{Loja}}&#10;Empresa: {{Nome}}&#10;Ambiente: {{Ambiente}}&#10;Login utilizado: {{Login}}&#10;Endereço BD: {{EndereoBD}}&#10;&#10;Dados Cliente.&#10;Nome: &#10;Telefone: {{telefone_pre_chat}}&#10;E-mail: {{Email}}&#10;&#10;Descrição do problema:&#10;&#10;Passo a passo para chegar ao problema:&#10;&#10;O que foi analisado:&#10;&#10;Anexos:"></textarea>
+        
+        <div class="help-text mt-1">
+          <b>Variáveis do BigHost:</b>
+          <code>{{Portal}}</code><code>{{Nome}}</code><code>{{EndereoBD}}</code><code>{{Ambiente}}</code><code>{{Release}}</code><code>{{CIDADE}}</code><code>{{CNPJ}}</code><code>{{ESTADO}}</code><code>{{Email}}</code><code>{{Franqueador}}</code><code>{{IE}}</code><code>{{Login}}</code><code>{{Loja}}</code><code>{{PlanoComercial}}</code><code>{{RAZO}}</code><code>{{Usuro}}</code>
+          <br><b>Variáveis do Pré-Chat:</b>
+          <code>{{telefone_pre_chat}}</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header"> Template de Finalização do Caso </div>
+        <div class="card-body">
+          <label for="finalizationTemplate" class="form-label">Mensagem Padrão de Finalização:</label>
+          <textarea id="finalizationTemplate" class="form-control" rows="6" placeholder="Ex: O caso foi finalizado e enviado para a equipe responsável. Agradecemos o seu contato e permanecemos à disposição!"></textarea>
+        </div>
+    </div>
+
+    <button id="applyPreChatSettings" class="btn btn-primary btn-lg w-100">Salvar Configurações</button>
+  </div>
+  
+  <script src="options.js"></script>
+</body>
+</html>

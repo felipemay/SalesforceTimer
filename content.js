@@ -1,6 +1,3 @@
-// Seu content.js existente...
-// ... (mantenha todo o código anterior, incluindo formatTime, updateChatTimers, finalizeChat, etc.) ...
-
 function formatTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
     const hours = Math.floor(totalSeconds / 3600);
@@ -196,49 +193,76 @@ function addPreChatButtons() {
             if (!buttonsContainer.querySelector("#copyClientDataPrechatButton")) {
                 const copyBtn = document.createElement("button");
                 copyBtn.id = "copyClientDataPrechatButton";
-                copyBtn.textContent = "Copiar Dados do Cliente";
+                copyBtn.textContent = "📋 Copiar Dados do Cliente";
                 copyBtn.className = "slds-button slds-button_neutral";
                 copyBtn.style.padding = "4px 8px";
-                copyBtn.style.minWidth = "120px";
+    copyBtn.style.backgroundColor = "#007bff"; // Cor primária (azul) para consistência
+    copyBtn.style.color = "#fff";
+    copyBtn.style.border = "none";
+    copyBtn.style.borderRadius = "3px";
+    copyBtn.style.cursor = "pointer";
+    copyBtn.style.minWidth = "120px";
                 buttonsContainer.appendChild(copyBtn);
 
                 copyBtn.addEventListener("click", () => {
-                    if (!detailSection) return alert("Detalhes não encontrados.");
+    if (!detailSection) return alert("Detalhes não encontrados.");
 
-                    const nome = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.Nome__c"] .uiOutputText')?.textContent.trim() || "";
-                    const cnpj = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.CNPJ__c"] .uiOutputText')?.textContent.trim() || "";
-                    const email = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.Email1__c"] .uiOutputText')?.textContent.trim() || "";
-                    const telefone = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.Telefone__c"] .uiOutputText')?.textContent.trim() || "";
+    const nome = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.Nome__c"] .uiOutputText')?.textContent.trim() || "";
+    const cnpj = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.CNPJ__c"] .uiOutputText')?.textContent.trim() || "";
+    const email = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.Email1__c"] .uiOutputText')?.textContent.trim() || "";
+    const telefone = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.Telefone__c"] .uiOutputText')?.textContent.trim() || "";
 
-                    chrome.storage.local.get(["preChatGreeting", "preChatEmpty", "preChatFooter", "preChatName", "preChatCNPJ", "preChatEmail", "preChatPhone", "preChatCustomFields"], (config) => {
-                        const greeting = config.preChatGreeting || "Olá! Tudo bem? 😊\n Antes de darmos sequência ao atendimento, por favor, poderia confirmar ou informar os seguintes dados:";
-                        const emptyTemplate = config.preChatEmpty || "Favor preencher com {campo} que você usa";
-                        const footer = config.preChatFooter || "Ah! Aproveito para informar que, através deste chat, é possível enviar e receber áudios, prints e vídeos. Esse recurso facilita muito o nosso atendimento, tornando a comunicação mais rápida e assertiva!\nFico no aguardo das informações para prosseguirmos.";
+    const storageKeys = [
+        "preChatGreeting", "preChatTemplate", "preChatEmpty", "preChatFooter", 
+        "preChatCustomFields", "disableGreeting", "disableEmpty", "disableFooter"
+    ];
 
-                        const preChatNameValue = config.preChatName || " • Nome:";
-                        const preChatCNPJValue = config.preChatCNPJ || " • CNPJ:";
-                        const preChatEmailValue = config.preChatEmail || " • Email:";
-                        const preChatPhoneValue = config.preChatPhone || " • Telefone:";
+    chrome.storage.local.get(storageKeys, (config) => {
+        // --- LÓGICA ATUALIZADA ---
+        const greeting = config.disableGreeting ? "" : (config.preChatGreeting || "Olá! Tudo bem? 😊\n Antes de darmos sequência ao atendimento, por favor, poderia confirmar o informar os seguintes dados:");
+        const footer = config.disableFooter ? "" : (config.preChatFooter || "Ah! Aproveito para informar que, através deste chat, é possível enviar e receber áudios, prints e vídeos. Esse recurso facilita muito o nosso atendimento, tornando a comunicação mais rápida e assertiva!\nFico no aguardo das informações para prosseguirem.");
+        let template = config.preChatTemplate || "• Nome: {{nome}}\n• CNPJ: {{cnpj}}\n• Email: {{email}}\n• Telefone: {{telefone}}";
+        const emptyTemplate = config.preChatEmpty || "Favor preencher com {campo} que você usa";
 
-                        const nomeValue = nome || emptyTemplate.replace("{campo}", "Nome");
-                        const cnpjValue = cnpj || emptyTemplate.replace("{campo}", "CNPJ");
-                        const emailValue = email || emptyTemplate.replace("{campo}", "Email");
-                        const telefoneValue = telefone || emptyTemplate.replace("{campo}", "Telefone");
+        const getValueOrDefault = (value, fieldName) => {
+            if (value) return value;
+            return config.disableEmpty ? "" : emptyTemplate.replace("{campo}", fieldName);
+        };
+        
+        const nomeValue = getValueOrDefault(nome, "Nome");
+        const cnpjValue = getValueOrDefault(cnpj, "CNPJ");
+        const emailValue = getValueOrDefault(email, "Email");
+        const telefoneValue = getValueOrDefault(telefone, "Telefone");
+        
+        template = template.replace(/{{nome}}/g, nomeValue)
+                           .replace(/{{cnpj}}/g, cnpjValue)
+                           .replace(/{{email}}/g, emailValue)
+                           .replace(/{{telefone}}/g, telefoneValue);
 
-                        let customFieldsText = "";
-                        if (Array.isArray(config.preChatCustomFields)) {
-                            config.preChatCustomFields.forEach(field => {
-                                const customValue = field.value?.trim() || emptyTemplate.replace("{campo}", field.label);
-                                customFieldsText += `${field.label}: ${customValue}\n`;
-                            });
-                        }
+        if (Array.isArray(config.preChatCustomFields)) {
+            config.preChatCustomFields.forEach(field => {
+                if (field.variable) {
+                    const customValue = getValueOrDefault(field.value, field.label);
+                    const variableRegex = new RegExp(`{{${field.variable}}}`, 'g');
+                    template = template.replace(variableRegex, customValue);
+                }
+            });
+        }
+        
+        template = template.replace(/{{campos_customizados}}/g, '');
 
-                        const textToCopy = `${greeting}\n\n${preChatNameValue} ${nomeValue}\n${preChatCNPJValue} ${cnpjValue}\n${preChatEmailValue} ${emailValue}\n${preChatPhoneValue} ${telefoneValue}\n${customFieldsText}\n${footer}`;
-                        navigator.clipboard.writeText(textToCopy)
-                            .then(() => alert("Dados copiados para a área de transferência!"))
-                            .catch(() => alert("Erro ao copiar dados."));
-                    });
-                });
+        // Monta o texto final de forma mais robusta, evitando linhas em branco extras
+        const parts = [];
+        if (greeting) parts.push(greeting);
+        if (template.trim()) parts.push(template.trim());
+        if (footer) parts.push(footer);
+        const textToCopy = parts.join('\n\n');
+        
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => alert("Dados copiados para a área de transferência!"))
+            .catch(() => alert("Erro ao copiar dados."));
+    });
+});
             }
 
             const cnpjFieldContainer = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.CNPJ__c"]');
@@ -257,75 +281,103 @@ function addPreChatButtons() {
                     copiarDadosBtn.style.minWidth = "120px";
                     buttonsContainer.appendChild(copiarDadosBtn);
 
-                    copiarDadosBtn.addEventListener("click", async () => {
-                        const cnpj = cnpjFieldContainer.querySelector(".uiOutputText")?.textContent.replace(/\D/g, "");
-                        if (!cnpj || cnpj.length < 14) {
-                            alert("CNPJ inválido ou não encontrado.");
-                            return;
-                        }
+copiarDadosBtn.addEventListener("click", async () => {
+    const cnpj = cnpjFieldContainer.querySelector(".uiOutputText")?.textContent.replace(/\D/g, "");
+    if (!cnpj || cnpj.length < 14) {
+        alert("CNPJ inválido ou não encontrado.");
+        return;
+    }
 
-                        copiarDadosBtn.textContent = "⏳ Buscando...";
-                        copiarDadosBtn.disabled = true;
+    copiarDadosBtn.textContent = "⏳ Buscando...";
+    copiarDadosBtn.disabled = true;
 
-                        try {
-                            const response = await chrome.runtime.sendMessage({
-                                action: 'searchCnpjInMicrovix',
-                                cnpj: cnpj
-                            });
+    try {
+        const response = await chrome.runtime.sendMessage({
+            action: 'searchCnpjInMicrovix',
+            cnpj: cnpj
+        });
 
-                            if (response.error) {
-                                alert(`Erro: ${response.error}`);
-                            } else if (response.data && response.data.length > 0) {
-                                const allPortals = response.data;
-                                const firstPortal = allPortals[0];
+        if (response.error) {
+            alert(`Erro: ${response.error}`);
+        } else if (response.data && response.data.length > 0) {
+            const allPortals = response.data;
+            const firstPortal = allPortals[0];
+            const extractedDetails = firstPortal;
 
-                                // Salvar o objeto firstPortal (com todos os dados) em uma variável para inspeção
-                                const extractedDetails = firstPortal;
-                                console.log("Dados extraídos do portal (objeto):", extractedDetails);
+            console.log("Dados extraídos do portal (objeto):", extractedDetails);
 
-                                // Recuperar o Telefone do "Copiar dados do Cliente"
-                                const telefonePreChat = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.Telefone__c"] .uiOutputText')?.textContent.trim() || "";
-                                
-                                // === INÍCIO: Construir o Texto Padrão para Copiar ===
-                                let textToCopy = `Dados do portal.\n`;
-                                textToCopy += `CNPJ: ${extractedDetails.CNPJ || ''}\n`;
-                                textToCopy += `Portal: ${extractedDetails.Portal || ''}\n`;
-                                textToCopy += `Empresa: ${extractedDetails.Nome || ''}\n`;
-                                textToCopy += `Ambiente: ${extractedDetails.Ambiente || ''}\n`;
-                                textToCopy += `Login utilizado: ${extractedDetails.Login || ''}\n`;
-                                textToCopy += `Endereço BD: ${extractedDetails.EndereoBD || ''}\n\n`; // Acesso à chave exata 'EndereoBD'
-                                
-                                textToCopy += `Dados Cliente.\n`;
-                                textToCopy += `Nome: \n`; // Deixar em branco
-                                textToCopy += `Telefone: ${telefonePreChat}\n`;
-                                textToCopy += `E-mail: ${extractedDetails.Email || ''}\n\n`;
-                                
-                                textToCopy += `Descrição do problema:\n\n`; // Deixar em branco
-                                textToCopy += `O que foi analisado:\n\n`; // Deixar em branco
-                                textToCopy += `Passo a passo para chegar ao problema:\n\n`; // Deixar em branco
-                                textToCopy += `Anexos:\n`; // Deixar em branco
-                                // === FIM: Construir o Texto Padrão para Copiar ===
-                                
-                                await navigator.clipboard.writeText(textToCopy);
-                                alert("Dados de detalhamento copiados para a área de transferência!");
+            const telefonePreChat = detailSection.querySelector('[data-target-selection-name="sfdc:RecordField.MessagingSession.Telefone__c"] .uiOutputText')?.textContent.trim() || "";
+            
+            // Busca o template de detalhamento salvo nas configurações
+            chrome.storage.local.get("detailingTemplate", (config) => {
+                const defaultTemplate = `Dados do portal.\nCNPJ: {{CNPJ}}\nPortal: {{Portal}}\nLoja: {{Loja}}\nEmpresa: {{Nome}}\nAmbiente: {{Ambiente}}\nLogin utilizado: {{Login}}\nEndereço BD: {{EndereoBD}}\n\nDados Cliente.\nNome: \nTelefone: {{telefone_pre_chat}}\nE-mail: {{Email}}\n\nDescrição do problema:\n\nPasso a passo para chegar ao problema:\n\nO que foi analisado:\n\nAnexos:`;
+                
+                let template = config.detailingTemplate || defaultTemplate;
 
-                                if (allPortals.length > 1) {
-                                    showMultiplePortalsOption(allPortals);
-                                }
-
-                            } else {
-                                alert("Nenhum dado encontrado para o CNPJ informado.");
-                            }
-                        } catch (error) {
-                            console.error("Erro ao buscar dados do Microvix:", error);
-                            alert("Erro inesperado ao buscar dados do Microvix.");
-                        } finally {
-                            copiarDadosBtn.textContent = "📋 Copiar Detalhamento";
-                            copiarDadosBtn.disabled = false;
-                        }
-                    });
+                // Substitui as variáveis do BigHost
+                for (const key in extractedDetails) {
+                    const value = extractedDetails[key] || '';
+                    const regex = new RegExp(`{{${key}}}`, 'g');
+                    template = template.replace(regex, value);
                 }
 
+                // Substitui as variáveis extras (do pré-chat, etc.)
+                template = template.replace(/{{telefone_pre_chat}}/g, telefonePreChat);
+
+                // Limpa quaisquer variáveis que não foram encontradas para não aparecerem no texto final
+                template = template.replace(/{{[^{}]+}}/g, '');
+
+                navigator.clipboard.writeText(template)
+                    .then(() => {
+                        alert("Dados de detalhamento copiados para a área de transferência!");
+                        if (allPortals.length > 1) {
+                            showMultiplePortalsOption(allPortals);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Erro ao copiar para a área de transferência:", err);
+                        alert("Falha ao copiar os dados.");
+                    });
+            });
+
+        } else {
+            alert("Nenhum dado encontrado para o CNPJ informado.");
+        }
+    } catch (error) {
+        console.error("Erro ao buscar dados do Microvix:", error);
+        alert("Erro inesperado ao buscar dados do Microvix.");
+    } finally {
+        copiarDadosBtn.textContent = "📋 Copiar Detalhamento";
+        copiarDadosBtn.disabled = false;
+    }
+});
+                }
+   if (!buttonsContainer.querySelector("#copyFinalizationButton")) {
+                    const copyFinalizationBtn = document.createElement("button");
+                    copyFinalizationBtn.id = "copyFinalizationButton";
+                    copyFinalizationBtn.textContent = "📋 Copiar Finalização";
+                    copyFinalizationBtn.style.padding = "4px 8px";
+                    copyFinalizationBtn.style.backgroundColor = "#4a54e4ff"; // Sua nova cor
+                    copyFinalizationBtn.style.color = "#fff";
+                    copyFinalizationBtn.style.border = "none";
+                    copyFinalizationBtn.style.borderRadius = "3px";
+                    copyFinalizationBtn.style.cursor = "pointer";
+                    copyFinalizationBtn.style.minWidth = "120px";;
+                    buttonsContainer.appendChild(copyFinalizationBtn);
+
+                    copyFinalizationBtn.addEventListener("click", () => {
+                        chrome.storage.local.get("finalizationTemplate", (config) => {
+                            const textToCopy = config.finalizationTemplate || "";
+                            if (textToCopy) {
+                                navigator.clipboard.writeText(textToCopy)
+                                    .then(() => alert("Mensagem de finalização copiada!"))
+                                    .catch(() => alert("Erro ao copiar mensagem."));
+                            } else {
+                                alert("Nenhum template de finalização configurado. Salve um nas opções da extensão.");
+                            }
+                        });
+                    });             
+                }
                 // Botão "🔍 BigHost"
                 if (!cnpjFieldContainer.querySelector("#consultarMicrovixBtn")) {
                     const bigHostBtn = document.createElement("button");
@@ -358,7 +410,7 @@ function addPreChatButtons() {
                             equipe: "",
                             opcao_pesquisa: "C",
                             conteudo: cnpj,
-                            slt_classificacao: "0",
+                            slt_classificacao: "3",
                             slt_plano_comercial_microvix: "0",
                             ordem_listagem: "N",
                         };
